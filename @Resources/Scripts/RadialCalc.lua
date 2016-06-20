@@ -5,11 +5,12 @@ function Initialize()
     print("Initializing...")
     -- radius is the length of the line
     local radius = tonumber(SKIN:GetVariable("Radius"))
+    local padding = tonumber(SKIN:GetVariable("Padding"))
     local width = tonumber(SKIN:GetVariable("Width"))
     local color = SKIN:GetVariable("Color")
     -- 
-    local originX = radius
-    local originY = radius
+    local originX = radius + (padding/2)
+    local originY = radius + (padding/2)
     local count = tonumber(SKIN:GetVariable("Applications"))
     local mode = SKIN:GetVariable("RadialMode")
     print("\tGot variables.")
@@ -94,6 +95,14 @@ function GetStartSub(count, mode)
 end
 
 function GetLauncherXY(phi, radius, originX, originY)
+    --[[
+    Translate the real angle into a useful right triangle angle in quadrant I, 
+    called theta, then use that to calcuate the x,y values in quadrant I.
+    Then, based on the original angle, add or subtract the x and y values from
+    the origin point to get the real position.
+    --]]
+    -- phi = actual angle
+    -- theta = effective angle
     local theta
     local coords = {}
     -- Determine quadrant, calculate angle and x/y coords
@@ -118,6 +127,8 @@ function GetLauncherXY(phi, radius, originX, originY)
         coords["x"] = math.floor(originX + (math.cos(theta) * radius))
         coords["y"] = math.floor(originY - (math.sin(theta) * radius))
     end
+    print("\t\t\tX: " .. coords["x"])
+    print("\t\t\tY: " .. coords["y"])
     return coords
     --[[
     local coords = {}
