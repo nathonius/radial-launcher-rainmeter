@@ -14,7 +14,7 @@ function Initialize()
     local count = tonumber(SKIN:GetVariable("Applications"))
     local mode = SKIN:GetVariable("RadialMode")
     print("\tGot variables.")
-    -- startSub contains both the starting angle and radias to add for each app
+    -- startSub contains both the starting angle and radial amount to add for each app
     print("\tGetting start/sub...")
     local startSub = GetStartSub(count, mode)
     local currentAngle = startSub["start"]
@@ -105,6 +105,9 @@ function GetLauncherXY(phi, radius, originX, originY)
     -- theta = effective angle
     local theta
     local coords = {}
+    -- the 35 is the width/height of the icons im using. need to fix this.
+    originX = originX - 35
+    originY = originY - 35
     -- Determine quadrant, calculate angle and x/y coords
     -- Quadrant I (+X, +Y)
     if (phi <= (math.pi)/2) then
