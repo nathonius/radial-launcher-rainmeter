@@ -2,33 +2,32 @@ function Initialize()
     --[[
     For each application, set the angle, endpoints, images
     --]]
-    print("Initializing...")
     -- radius is the length of the line
     local radius = tonumber(SKIN:GetVariable("Radius"))
-    local padding = tonumber(SKIN:GetVariable("Padding"))
+    local padding = tonumber(SKIN:GetVariable("Padding"))/2
     local width = tonumber(SKIN:GetVariable("Width"))
     local color = SKIN:GetVariable("Color")
-    -- 
-    local originX = radius + (padding/2)
-    local originY = radius + (padding/2)
+    local originX = radius + (padding)
+    local originY = radius + (padding)
     local count = tonumber(SKIN:GetVariable("Applications"))
     local mode = SKIN:GetVariable("RadialMode")
-    print("\tGot variables.")
     -- startSub contains both the starting angle and radial amount to add for each app
-    print("\tGetting start/sub...")
     local startSub = GetStartSub(count, mode)
     local currentAngle = startSub["start"]
-    print("\t\tGot start/sub.")
-    print("\tSetting options...")
+    -- Now clear out the include file
+    local includePath = SELF:GetOption("IncludeFile")
+    local includeFile = io.open(SKIN:MakePathAbsolute(includePath), "w")
+    includeFile:write("; ************************************************************ ;\n")
+    includeFile:write("; THIS FILE IS PROCEDURALLY GENERATED AND WILL BE OVERWRITTEN! ;\n")
+    includeFile:write("; ************************************************************ ;\n")
+    includeFile:close()
     for i=1,count do
-        SetOptions(i, radius, currentAngle, originX, originY, width, color)
+        SetOptions(i, radius, currentAngle, originX, originY, width, color, includePath)
         currentAngle = currentAngle + startSub["subdiv"]
-        print("\t\tSet app " .. i ..".")
     end
-    print("\t\tDone.")
 end
 
-function SetOptions(i, radius, angle, originX, originY, width, color)
+function SetOptions(i, radius, angle, originX, originY, width, color, path)
     local appCoords = GetLauncherXY(angle, radius, originX, originY)
     local lineWH = "(2*" .. radius ..")"
     local lineX = "(" .. originX .. "-" .. radius ..")"
@@ -36,41 +35,41 @@ function SetOptions(i, radius, angle, originX, originY, width, color)
     local write = "!WriteKeyValue"
     local appMeter = "App" .. i
     local execVar = SKIN:GetVariable("App" .. i .. "Exec")
-    local imagePath = "#@#\\Apps\\" .. appMeter .. "\\button.png"
+    local imagePath = "#@#Apps\\" .. appMeter .. "\\button.png"
     local lineMeter = appMeter .. "Line"
     local angleMeasure = appMeter .. "Measure"
-    -- Set App button
-    SKIN:Bang(write, appMeter, "Meter", "Button")
-    SKIN:Bang(write, appMeter, "ButtonImage", imagePath)
-    SKIN:Bang(write, appMeter, "ButtonCommand", execVar)
-    SKIN:Bang(write, appMeter, "X", appCoords["x"])
-    SKIN:Bang(write, appMeter, "Y", appCoords["y"])
-    SKIN:Bang(write, appMeter, "Group", "1")
-    SKIN:Bang(write, appMeter, "Hidden", "0")
     -- Set Angle measure
-    SKIN:Bang(write, angleMeasure, "Measure", "Calc")
-    SKIN:Bang(write, angleMeasure, "Formula", angle)
-    SKIN:Bang(write, angleMeasure, "MinValue", "0")
-    SKIN:Bang(write, angleMeasure, "MaxValue", "(2*PI)")
+    SKIN:Bang(write, angleMeasure, "Measure", "Calc", path)
+    SKIN:Bang(write, angleMeasure, "Formula", angle, path)
+    SKIN:Bang(write, angleMeasure, "MinValue", "0", path)
+    SKIN:Bang(write, angleMeasure, "MaxValue", "(2*PI)", path)
     -- Set lineMeter
     -- Hardcoded Values
-    SKIN:Bang(write, lineMeter, "Meter", "Roundline")
-    SKIN:Bang(write, lineMeter, "LineStart", "0")
-    SKIN:Bang(write, lineMeter, "StartAngle", "(-PI/2)")
-    SKIN:Bang(write, lineMeter, "RotationAngle", "(PI*2)")
-    SKIN:Bang(write, lineMeter, "Solid", "0")
-    SKIN:Bang(write, lineMeter, "AntiAlias", "1")
-    SKIN:Bang(write, lineMeter, "Group", "1")
-    SKIN:Bang(write, lineMeter, "Hidden", "0")
+    SKIN:Bang(write, lineMeter, "Meter", "Roundline", path)
+    SKIN:Bang(write, lineMeter, "LineStart", "0", path)
+    SKIN:Bang(write, lineMeter, "StartAngle", "(-PI/2)", path)
+    SKIN:Bang(write, lineMeter, "RotationAngle", "(PI*2)", path)
+    SKIN:Bang(write, lineMeter, "Solid", "0", path)
+    SKIN:Bang(write, lineMeter, "AntiAlias", "1", path)
+    SKIN:Bang(write, lineMeter, "Group", "1", path)
+    SKIN:Bang(write, lineMeter, "Hidden", "1", path)
     -- Variable Values
-    SKIN:Bang(write, lineMeter, "X", lineX)
-    SKIN:Bang(write, lineMeter, "Y", lineY)
-    SKIN:Bang(write, lineMeter, "W", lineWH)
-    SKIN:Bang(write, lineMeter, "H", lineWH)
-    SKIN:Bang(write, lineMeter, "MeasureName", angleMeasure)
-    SKIN:Bang(write, lineMeter, "LineWidth", width)
-    SKIN:Bang(write, lineMeter, "LineLength", radius)
-    SKIN:Bang(write, lineMeter, "LineColor", color)
+    SKIN:Bang(write, lineMeter, "X", lineX, path)
+    SKIN:Bang(write, lineMeter, "Y", lineY, path)
+    SKIN:Bang(write, lineMeter, "W", lineWH, path)
+    SKIN:Bang(write, lineMeter, "H", lineWH, path)
+    SKIN:Bang(write, lineMeter, "MeasureName", angleMeasure, path)
+    SKIN:Bang(write, lineMeter, "LineWidth", width, path)
+    SKIN:Bang(write, lineMeter, "LineLength", radius, path)
+    SKIN:Bang(write, lineMeter, "LineColor", color, path)
+    -- Set App button
+    SKIN:Bang(write, appMeter, "Meter", "Button", path)
+    SKIN:Bang(write, appMeter, "ButtonImage", imagePath, path)
+    SKIN:Bang(write, appMeter, "ButtonCommand", execVar, path)
+    SKIN:Bang(write, appMeter, "X", appCoords["x"], path)
+    SKIN:Bang(write, appMeter, "Y", appCoords["y"], path)
+    SKIN:Bang(write, appMeter, "Group", "1", path)
+    SKIN:Bang(write, appMeter, "Hidden", "1", path)
 end
 
 function GetStartSub(count, mode)
@@ -103,6 +102,7 @@ function GetLauncherXY(phi, radius, originX, originY)
     --]]
     -- phi = actual angle
     -- theta = effective angle
+    phi = phi - math.pi/2
     local theta
     local coords = {}
     -- the 35 is the width/height of the icons im using. need to fix this.
@@ -130,13 +130,5 @@ function GetLauncherXY(phi, radius, originX, originY)
         coords["x"] = math.floor(originX + (math.cos(theta) * radius))
         coords["y"] = math.floor(originY - (math.sin(theta) * radius))
     end
-    print("\t\t\tX: " .. coords["x"])
-    print("\t\t\tY: " .. coords["y"])
     return coords
-    --[[
-    local coords = {}
-    coords["y"] = math.floor((originY + radius) * math.sin(phi))
-    coords["x"] = math.floor((originX + radius) * math.cos(phi))
-    return coords
-    --]]
 end
