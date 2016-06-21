@@ -53,6 +53,7 @@ function SetOptions(i, radius, angle, originX, originY, width, color, path)
     SKIN:Bang(write, lineMeter, "AntiAlias", "1", path)
     SKIN:Bang(write, lineMeter, "Group", "1", path)
     SKIN:Bang(write, lineMeter, "Hidden", "1", path)
+    SKIN:Bang(write, lineMeter, "DynamicVariables", "1", path)
     -- Variable Values
     SKIN:Bang(write, lineMeter, "X", lineX, path)
     SKIN:Bang(write, lineMeter, "Y", lineY, path)
@@ -70,6 +71,7 @@ function SetOptions(i, radius, angle, originX, originY, width, color, path)
     SKIN:Bang(write, appMeter, "Y", appCoords["y"], path)
     SKIN:Bang(write, appMeter, "Group", "1", path)
     SKIN:Bang(write, appMeter, "Hidden", "1", path)
+    SKIN:Bang(write, appMeter, "DynamicVariables", "1", path)
 end
 
 function GetStartSub(count, mode)
